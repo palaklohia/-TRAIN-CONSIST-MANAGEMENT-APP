@@ -1,5 +1,5 @@
-import java.util.LinkedHashSet;
-import java.util.Set;
+import java.util.HashMap;
+import java.util.Map;
 
 public class TrainConsistManagementApp {
 
@@ -9,33 +9,35 @@ public class TrainConsistManagementApp {
         System.out.println("=== Train Consist Management App ===");
 
         // ==============================
-        // LinkedHashSet for Train Formation
+        // HashMap for Bogie → Capacity
         // ==============================
-        Set<String> trainFormation = new LinkedHashSet<>();
+        Map<String, Integer> bogieCapacityMap = new HashMap<>();
 
-        System.out.println("\nAttaching bogies to train...");
+        System.out.println("\nAdding bogie capacity details...");
 
-        // Add bogies
-        trainFormation.add("Engine");
-        trainFormation.add("Sleeper");
-        trainFormation.add("Cargo");
-        trainFormation.add("Guard");
+        // Insert bogie-capacity mapping
+        bogieCapacityMap.put("Sleeper", 72);
+        bogieCapacityMap.put("AC Chair", 60);
+        bogieCapacityMap.put("First Class", 40);
 
-        // Attempt duplicate
-        System.out.println("\nAttempting to add duplicate bogie: Sleeper");
-        boolean isAdded = trainFormation.add("Sleeper");
+        // ==============================
+        // Display using entrySet()
+        // ==============================
+        System.out.println("\nBogie Capacity Details:");
 
-        if (!isAdded) {
-            System.out.println("Duplicate ignored: Sleeper");
+        for (Map.Entry<String, Integer> entry : bogieCapacityMap.entrySet()) {
+            String bogie = entry.getKey();
+            Integer capacity = entry.getValue();
+
+            System.out.println("Bogie: " + bogie + " → Capacity: " + capacity);
         }
 
         // ==============================
-        // Display Formation
+        // Fast Lookup Example
         // ==============================
-        System.out.println("\nFinal Train Formation (Ordered & Unique):");
-        for (String bogie : trainFormation) {
-            System.out.println(bogie);
-        }
+        System.out.println("\nChecking capacity of Sleeper...");
+        int sleeperCapacity = bogieCapacityMap.get("Sleeper");
+        System.out.println("Sleeper Capacity: " + sleeperCapacity);
 
         System.out.println("\nProgram continues...");
     }
