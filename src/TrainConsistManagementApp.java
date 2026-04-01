@@ -1,38 +1,67 @@
 import java.util.HashSet;
+import java.util.LinkedList;
 import java.util.Set;
 
 public class TrainConsistManagementApp {
 
     public static void main(String[] args) {
 
-        // Welcome Message
         System.out.println("=== Train Consist Management App ===");
 
         // ==============================
-        // Initialize HashSet for Bogie IDs
+        // Step 1: Ensure Uniqueness (Set)
         // ==============================
-        Set<String> bogieIds = new HashSet<>();
-
-        System.out.println("\nAdding bogie IDs...");
-
-        // Adding bogies (including duplicates intentionally)
-        bogieIds.add("BG101");
-        bogieIds.add("BG102");
-        bogieIds.add("BG103");
-        bogieIds.add("BG101"); // duplicate
-        bogieIds.add("BG102"); // duplicate
+        Set<String> uniqueBogieIds = new HashSet<>();
 
         // ==============================
-        // Display Unique Bogies
+        // Step 2: Maintain Order (LinkedList)
         // ==============================
-        System.out.println("\nFinal Bogie IDs (Duplicates Automatically Removed):");
-        System.out.println(bogieIds);
+        LinkedList<String> trainConsist = new LinkedList<>();
+
+        System.out.println("\nAdding bogies to train...");
+
+        // Helper method logic inline (to avoid duplicates)
+        addBogie(uniqueBogieIds, trainConsist, "Engine");
+        addBogie(uniqueBogieIds, trainConsist, "Sleeper");
+        addBogie(uniqueBogieIds, trainConsist, "AC");
+        addBogie(uniqueBogieIds, trainConsist, "Cargo");
+        addBogie(uniqueBogieIds, trainConsist, "Guard");
+
+        // Try duplicate
+        addBogie(uniqueBogieIds, trainConsist, "AC"); // ignored
 
         // ==============================
-        // Show Size to Prove Uniqueness
+        // Insert at specific position
         // ==============================
-        System.out.println("\nTotal Unique Bogies: " + bogieIds.size());
+        System.out.println("\nInserting Pantry Car at position 2...");
+        trainConsist.add(2, "Pantry");
+
+        // ==============================
+        // Remove operations
+        // ==============================
+        System.out.println("\nRemoving first bogie...");
+        trainConsist.removeFirst();
+
+        System.out.println("Removing last bogie...");
+        trainConsist.removeLast();
+
+        // ==============================
+        // Final Output
+        // ==============================
+        System.out.println("\nFinal Train Consist (Ordered):");
+        for (String bogie : trainConsist) {
+            System.out.println(bogie);
+        }
 
         System.out.println("\nProgram continues...");
+    }
+
+    // Method to ensure uniqueness + ordered insertion
+    public static void addBogie(Set<String> set, LinkedList<String> list, String bogie) {
+        if (set.add(bogie)) { // only adds if not duplicate
+            list.addLast(bogie);
+        } else {
+            System.out.println("Duplicate ignored: " + bogie);
+        }
     }
 }
