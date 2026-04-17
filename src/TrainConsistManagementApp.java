@@ -1,29 +1,23 @@
 import java.util.*;
-import java.util.stream.*;
+import java.util.stream.Collectors;
 
-// Goods Bogie Class
-class GoodsBogie {
+// Bogie Class
+class Bogie {
     private int bogieId;
-    private String type;   // Cylindrical, Open, Box
-    private String cargo;  // Petroleum, Coal, Grain, etc.
+    private int capacity;
 
-    public GoodsBogie(int bogieId, String type, String cargo) {
+    public Bogie(int bogieId, int capacity) {
         this.bogieId = bogieId;
-        this.type = type;
-        this.cargo = cargo;
+        this.capacity = capacity;
     }
 
-    public String getType() {
-        return type;
-    }
-
-    public String getCargo() {
-        return cargo;
+    public int getCapacity() {
+        return capacity;
     }
 
     @Override
     public String toString() {
-        return "Bogie ID: " + bogieId + ", Type: " + type + ", Cargo: " + cargo;
+        return "Bogie ID: " + bogieId + ", Capacity: " + capacity;
     }
 }
 
@@ -32,34 +26,57 @@ public class TrainConsistManagementApp {
 
     public static void main(String[] args) {
 
-        // Step 1: Create list of goods bogies
-        List<GoodsBogie> bogies = new ArrayList<>();
-        bogies.add(new GoodsBogie(1, "Cylindrical", "Petroleum"));
-        bogies.add(new GoodsBogie(2, "Open", "Coal"));
-        bogies.add(new GoodsBogie(3, "Box", "Grain"));
-        bogies.add(new GoodsBogie(4, "Cylindrical", "Petroleum"));
-
-        System.out.println("=== Goods Bogies ===");
-        bogies.forEach(System.out::println);
-
-        // Step 2: Stream + allMatch() safety validation
-        boolean isSafe = bogies.stream()
-                .allMatch(b ->
-                        // Rule: Cylindrical → only Petroleum
-                        !b.getType().equals("Cylindrical")
-                                || b.getCargo().equals("Petroleum")
-                );
-
-        // Step 3: Display result
-        System.out.println("\n=== Safety Validation ===");
-        if (isSafe) {
-            System.out.println("Train is SAFETY COMPLIANT ✅");
-        } else {
-            System.out.println("Train is NOT SAFE ❌");
+        // Step 1: Create dataset (large for benchmarking)
+        List<Bogie> bogies = new ArrayList<>();
+        for (int i = 1; i <= 100000; i++) {
+            bogies.add(new Bogie(i, (int)(Math.random() * 100)));
         }
 
-        // Step 4: Verify original list unchanged
-        System.out.println("\n=== Original List After Validation (Unchanged) ===");
-        bogies.forEach(System.out::println);
+        int threshold = 60;
+
+        // -------------------------------
+        // LOOP-BASED FILTERING
+        // -------------------------------
+        long startLoop = System.nanoTime();
+
+        List<Bogie> loopResult = new ArrayList<>();
+        for (Bogie b : bogies) {
+            if (b.getCapacity() > threshold) {
+                loopResult.add(b);
+            }
+        }
+
+        long endLoop = System.nanoTime();
+        long loopTime = endLoop - startLoop;
+
+        // -------------------------------
+        // STREAM-BASED FILTERING
+        // -------------------------------
+        long startStream = System.nanoTime();
+
+        List<Bogie> streamResult = bogies.stream()
+                .filter(b -> b.getCapacity() > threshold)
+                .collect(Collectors.toList());
+
+        long endStream = System.nanoTime();
+        long streamTime = endStream - startStream;
+
+        // -------------------------------
+        // OUTPUT RESULTS
+        // -------------------------------
+        System.out.println("=== Performance Comparison ===");
+
+        System.out.println("Loop Result Size   : " + loopResult.size());
+        System.out.println("Stream Result Size : " + streamResult.size());
+
+        System.out.println("\nLoop Execution Time   : " + loopTime + " ns");
+        System.out.println("Stream Execution Time : " + streamTime + " ns");
+
+        // Verify correctness
+        if (loopResult.size() == streamResult.size()) {
+            System.out.println("\nResults MATCH ✅");
+        } else {
+            System.out.println("\nResults DO NOT MATCH ❌");
+        }
     }
 }
