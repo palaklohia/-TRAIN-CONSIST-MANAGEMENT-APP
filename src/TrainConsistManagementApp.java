@@ -4,20 +4,22 @@ import java.util.stream.Collectors;
 // Bogie Class
 class Bogie {
     private int bogieId;
+    private String type;
     private int capacity;
 
-    public Bogie(int bogieId, int capacity) {
+    public Bogie(int bogieId, String type, int capacity) {
         this.bogieId = bogieId;
+        this.type = type;
         this.capacity = capacity;
     }
 
-    public int getCapacity() {
-        return capacity;
+    public String getType() {
+        return type;
     }
 
     @Override
     public String toString() {
-        return "Bogie ID: " + bogieId + ", Capacity: " + capacity;
+        return "Bogie ID: " + bogieId + ", Type: " + type + ", Capacity: " + capacity;
     }
 }
 
@@ -26,30 +28,31 @@ public class TrainConsistManagementApp {
 
     public static void main(String[] args) {
 
-        // Step 1: Create list of bogies (UC7 reused)
+        // Step 1: Create bogie list (reuse from UC7)
         List<Bogie> bogies = new ArrayList<>();
-        bogies.add(new Bogie(1, 50));
-        bogies.add(new Bogie(2, 70));
-        bogies.add(new Bogie(3, 80));
-        bogies.add(new Bogie(4, 60));
-        bogies.add(new Bogie(5, 90));
+        bogies.add(new Bogie(1, "Sleeper", 72));
+        bogies.add(new Bogie(2, "AC Chair", 60));
+        bogies.add(new Bogie(3, "Sleeper", 75));
+        bogies.add(new Bogie(4, "First Class", 40));
+        bogies.add(new Bogie(5, "AC Chair", 65));
 
         System.out.println("=== Original Bogie List ===");
         bogies.forEach(System.out::println);
 
-        // Step 2: Convert to Stream + Filter + Collect
-        int threshold = 70;
+        // Step 2: Stream + groupingBy
+        Map<String, List<Bogie>> groupedBogies = bogies.stream()
+                .collect(Collectors.groupingBy(b -> b.getType()));
 
-        List<Bogie> filteredBogies = bogies.stream()
-                .filter(b -> b.getCapacity() > threshold) // lambda condition
-                .collect(Collectors.toList());
+        // Step 3: Display grouped result
+        System.out.println("\n=== Grouped Bogies by Type ===");
 
-        // Step 3: Display filtered result
-        System.out.println("\n=== Filtered Bogies (Capacity > " + threshold + ") ===");
-        filteredBogies.forEach(System.out::println);
+        for (Map.Entry<String, List<Bogie>> entry : groupedBogies.entrySet()) {
+            System.out.println("\nType: " + entry.getKey());
+            entry.getValue().forEach(System.out::println);
+        }
 
         // Step 4: Verify original list unchanged
-        System.out.println("\n=== Original List After Filtering (Unchanged) ===");
+        System.out.println("\n=== Original List After Grouping (Unchanged) ===");
         bogies.forEach(System.out::println);
     }
 }
